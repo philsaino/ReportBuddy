@@ -1,0 +1,47 @@
+// Titoli
+"Report Eventi" = "Report Eventi";
+"Calendari" = "Calendari";
+"Parole Chiave" = "Parole Chiave";
+"Eventi del mese corrente" = "Eventi del mese corrente";
+"Lingua Email" = "Lingua Email";
+
+// Azioni
+"Seleziona..." = "Seleziona...";
+"Aggiungi" = "Aggiungi";
+"Aggiorna" = "Aggiorna";
+"Rimuovi" = "Rimuovi";
+"Esporta" = "Esporta";
+"Esporta via Email" = "Esporta via Email";
+
+// Placeholder
+"Nuova parola chiave" = "Nuova parola chiave";
+"Senza titolo" = "Senza titolo";
+
+// Messaggi
+"Nessun evento trovato" = "Nessun evento trovato";
+"Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi" = "Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi";
+"Aggiorna la lista degli eventi" = "Aggiorna la lista degli eventi";
+"Esporta eventi via email" = "Esporta eventi via email";
+
+// Report Email
+"Report Eventi\n\n" = "Report Eventi\n\n";
+"Totale eventi: " = "Totale eventi: ";
+
+// Impostazioni Email
+"Impostazioni Email" = "Impostazioni Email";
+"Destinatario" = "Destinatario";
+"Oggetto" = "Oggetto";
+"Variabili disponibili:" = "Variabili disponibili:";
+"Salva" = "Salva";
+
+"Configura Email" = "Configura Email";
+
+// Email Settings Dialog
+"Destinatario Email" = "Destinatario Email";
+"Inserisci indirizzo email" = "Inserisci indirizzo email";
+"Oggetto Email" = "Oggetto Email";
+"Inserisci oggetto" = "Inserisci oggetto";
+"$month - Mese corrente" = "$month - Mese corrente";
+"$year - Anno corrente" = "$year - Anno corrente";
+"Solo eventi giornata intera" = "Solo eventi giornata intera";
+  

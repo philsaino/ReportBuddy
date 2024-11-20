@@ -1,0 +1,44 @@
+// Titles
+"Report Eventi" = "Events Report";
+"Calendari" = "Calendars";
+"Parole Chiave" = "Keywords";
+"Eventi del mese corrente" = "Current Month Events";
+"Lingua Email" = "Email Language";
+"Impostazioni Email" = "Email Settings";
+"Destinatario" = "Recipient";
+"Oggetto" = "Subject";
+"Variabili disponibili:" = "Available variables:";
+"Salva" = "Save";
+"Configura Email" = "Configure Email";
+
+// Actions
+"Seleziona..." = "Select...";
+"Aggiungi" = "Add";
+"Aggiorna" = "Refresh";
+"Rimuovi" = "Remove";
+"Esporta" = "Export";
+"Esporta via Email" = "Export via Email";
+
+// Placeholder
+"Nuova parola chiave" = "New keyword";
+"Senza titolo" = "Untitled";
+
+// Messages
+"Nessun evento trovato" = "No events found";
+"Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi" = "Select a calendar and add keywords to see events";
+"Aggiorna la lista degli eventi" = "Refresh events list";
+"Esporta eventi via email" = "Export events via email";
+
+// Report Email
+"Report Eventi\n\n" = "Events Report\n\n";
+"Totale eventi: " = "Total events: ";
+
+// Email Settings Dialog
+"Destinatario Email" = "Email Recipient";
+"Inserisci indirizzo email" = "Enter email address";
+"Oggetto Email" = "Email Subject";
+"Inserisci oggetto" = "Enter subject";
+"$month - Mese corrente" = "$month - Current month";
+"$year - Anno corrente" = "$year - Current year";
+"Solo eventi giornata intera" = "All-day events only";
+  
