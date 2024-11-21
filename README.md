@@ -2,69 +2,97 @@
 
 A macOS application designed to simplify calendar event reporting, perfect for managing monthly reports like meal vouchers or attendance tracking.
 
-## Features
+## 🌟 Key Features
 
 ### 🗓 Calendar Management
-- Multiple calendar selection
-- Source-based organization (iCloud, Google, etc.)
-- Calendar color visualization
-- Event filtering by calendar
+- **Multiple Calendar Support**
+  - Select multiple calendars from different sources (iCloud, Google, etc.)
+  - Visual organization by source
+  - Calendar color display in event list
+  - Quick calendar selection/deselection
 
-### 🔍 Advanced Filters
-- **Keywords**: 
-  - Event filtering by keywords
+### 🔍 Advanced Filtering System
+- **Keyword Management**
+  - Dynamic keyword filtering
   - Quick edit with double-click
-  - Dynamic add/remove
-- **Dates**:
-  - Current month filter
-  - Custom date range
-- **Event Types**:
+  - Real-time keyword addition/removal
+  - Case-insensitive matching
+
+- **Date Range Control**
+  - Automatic current month selection
+  - Custom date range picker with intuitive interface
+  - Dynamic date range display
+  - Flexible period selection with toggle switch
+
+- **Event Type Filtering**
   - All-day events filter
+  - Source and account information display
+  - Automatic duplicate event removal
 
-### 📧 Email Templates
-- Multiple template management
-- Per-template configuration:
+### 📧 Email Template System
+- **Template Management**
+  - Multiple template support
+  - Template duplication and customization
+  - Quick template switching
+- **Dynamic Variables**
+  - `$month` - Current month (localized)
+  - `$year` - Current year
+- **Customizable Fields**
   - Default recipient
-  - Customizable subject with variables ($month, $year)
+  - Subject line with variable support
   - Header and footer messages
-  - Language-specific (IT/EN)
+  - Language-specific content (IT/EN)
 
-### 🌍 Internationalization
-- Full Italian/English support
-- Interface localization
-- Email report localization
-- Multilingual documentation
+### 🌍 Full Internationalization
+- **Interface Languages**
+  - Complete English support
+  - Complete Italian support
+  - Dynamic language switching
+- **Content Localization**
+  - Localized date formats
+  - Localized email templates
+  - Localized help documentation
+  - Localized system messages
 
-### 🔄 Updates
-- Automatic update checking
-- New version notifications
-- Direct update downloads
-- Integrated release notes
+### 🔄 Automatic Updates
+- **Update Management**
+  - Automatic update checking at startup
+  - Manual update verification (⌘U)
+  - Release notes display
+  - Direct download through browser
+  - Simplified update process
 
 ### ⌨️ Keyboard Shortcuts
-- `⌘,` - Preferences
+- `⌘,` - Open Preferences
 - `⌘R` - Refresh Events
 - `⌘E` - Export via Email
 - `⌘U` - Check for Updates
 
-## System Requirements
+## 🔧 System Requirements
 - macOS 13.0 or later
-- Calendar access
+- Calendar access permissions
 - Configured email account
+- Internet connection for updates
 
-## Installation
-1. Download the latest release
+## 📥 Installation
+1. Download the latest release from GitHub
 2. Open the .dmg file
 3. Drag ReportBuddy to Applications folder
-4. Grant calendar access when prompted
+4. Launch the app and grant calendar access when prompted
 
-## Privacy
+## 🔒 Privacy & Security
 - Read-only calendar access
-- No external data transmission
+- No data transmission to external servers
 - Local configuration storage
+- Secure update verification through GitHub
 
-## Contributing
+## 🤝 Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
+Special thanks to [@lorenzo-allevi](https://github.com/lorenzo-allevi) for:
+- Valuable suggestions on UI/UX improvements
+- Testing and feedback on the update system
+- Input on the custom date range implementation
+
+## 📝 License
 [MIT](https://choosealicense.com/licenses/mit/) 
