@@ -87,4 +87,11 @@
 "Nessun Aggiornamento" = "Nessun Aggiornamento";
 "Stai utilizzando l'ultima versione di ReportBuddy" = "Stai utilizzando l'ultima versione di ReportBuddy";
 "OK" = "OK";
+"Download in corso..." = "Download in corso...";
+"Installazione in corso..." = "Installazione in corso...";
+"Errore durante il download" = "Errore durante il download";
+"Errore durante l'installazione" = "Errore durante l'installazione";
+"Riavvio necessario" = "Riavvio necessario";
+"L'aggiornamento è stato installato. L'app verrà riavviata." = "L'aggiornamento è stato installato. L'app verrà riavviata.";
+"Installa e Riavvia" = "Installa e Riavvia";
   

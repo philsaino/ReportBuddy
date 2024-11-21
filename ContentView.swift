@@ -10,6 +10,7 @@ import EventKit
 
 struct ContentView: View {
     @StateObject private var viewModel = CalendarViewModel()
+    @EnvironmentObject private var updateService: UpdateService
     @State private var showingEmailSettings = false
     @State private var newKeyword = ""
     @FocusState private var keywordFocus: Bool

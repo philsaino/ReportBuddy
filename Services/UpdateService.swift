@@ -29,7 +29,6 @@ struct GitHubRelease: Codable {
 
 class UpdateService: ObservableObject {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ReportBuddy", category: "UpdateService")
-    static let shared = UpdateService()
     
     @Published var updateAvailable = false
     @Published var latestVersion: String?

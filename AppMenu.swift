@@ -13,6 +13,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var settingsWindow: NSWindow?
     
+    private let updateService: UpdateService
+    
+    init(updateService: UpdateService) {
+        self.updateService = updateService
+        super.init()
+    }
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         let mainMenu = NSMenu()
         
@@ -140,8 +147,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Controlla gli aggiornamenti
         Task {
-            await UpdateService.shared.checkForUpdates()
-            if UpdateService.shared.updateAvailable {
+            await updateService.checkForUpdates()
+            if updateService.updateAvailable {
                 await MainActor.run {
                     showUpdateAlert()
                 }
@@ -200,26 +207,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    private func showUpdateAlert() {
-        let alert = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 300),
-            styleMask: [.titled, .closable],
-            backing: .buffered,
-            defer: false
-        )
+    func showUpdateAlert() {
+        let alert = NSAlert()
+        alert.messageText = NSLocalizedString("Aggiornamento Disponibile", comment: "")
+        alert.informativeText = updateService.releaseNotes ?? ""
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: NSLocalizedString("Scarica", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Non ora", comment: ""))
         
-        let hostingView = NSHostingView(rootView: UpdateAlertView())
-        alert.contentView = hostingView
-        alert.center()
-        
-        NSApp.runModal(for: alert)
-        alert.close()
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            if let urlString = updateService.downloadURL,
+               let url = URL(string: urlString) {
+                NSWorkspace.shared.open(url)
+            }
+        }
     }
     
     @objc func checkForUpdates() {
         Task {
-            await UpdateService.shared.checkForUpdates()
-            if UpdateService.shared.updateAvailable {
+            await updateService.checkForUpdates()
+            if updateService.updateAvailable {
                 await MainActor.run {
                     showUpdateAlert()
                 }
@@ -231,7 +239,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    private func showNoUpdatesAlert() {
+    func showNoUpdatesAlert() {
         let alert = NSAlert()
         alert.messageText = NSLocalizedString("Nessun Aggiornamento", comment: "")
         alert.informativeText = NSLocalizedString("Stai utilizzando l'ultima versione di ReportBuddy", comment: "")
