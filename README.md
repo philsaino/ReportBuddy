@@ -95,4 +95,11 @@ Special thanks to [@lorenzo-allevi](https://github.com/lorenzo-allevi) for:
 - Input on the custom date range implementation
 
 ## 📝 License
-[MIT](https://choosealicense.com/licenses/mit/) 
+[MIT](https://choosealicense.com/licenses/mit/)
+
+## 📋 Copyright
+© 2024 Filippo Saino. All rights reserved.  
+GitHub: [@philsaino](https://github.com/philsaino)
+
+## 📚 Documentation
+For detailed documentation, please visit the [ReportBuddy Wiki](https://github.com/philsaino/ReportBuddy/wiki).
