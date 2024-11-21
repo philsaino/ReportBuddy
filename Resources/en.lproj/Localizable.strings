@@ -92,4 +92,15 @@
 "Riavvio necessario" = "Restart required";
 "L'aggiornamento è stato installato. L'app verrà riavviata." = "Update has been installed. The app will restart.";
 "Installa e Riavvia" = "Install and Restart";
+"Preferences..." = "Preferences...";
+"Check for Updates..." = "Check for Updates...";
+"Quit ReportBuddy" = "Quit ReportBuddy";
+"Window" = "Window";
+"Minimize" = "Minimize";
+"Zoom" = "Zoom";
+"Bring All to Front" = "Bring All to Front";
+"Help" = "Help";
+"ReportBuddy Help" = "ReportBuddy Help";
+"La documentazione è disponibile su GitHub" = "Documentation is available on GitHub";
+"Apri nel Browser" = "Open in Browser";
   

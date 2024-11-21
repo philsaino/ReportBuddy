@@ -1,159 +1,94 @@
 import SwiftUI
-import WebKit
+import AppKit
 
-// Aggiungi questa estensione per il metodo with
-extension NSMenuItem {
-    func with(_ configure: (NSMenuItem) -> Void) -> NSMenuItem {
-        configure(self)
-        return self
-    }
-}
-
-class AppDelegate: NSObject, NSApplicationDelegate {
+final class ReportBuddyDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var settingsWindow: NSWindow?
-    
-    private let updateService: UpdateService
-    
-    init(updateService: UpdateService) {
-        self.updateService = updateService
-        super.init()
-    }
+    private let updateService = UpdateService()
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         let mainMenu = NSMenu()
         
-        // App Menu (ReportBuddy)
+        // ReportBuddy Menu
         let appMenu = NSMenu()
-        let appMenuItem = NSMenuItem()
+        let appMenuItem = NSMenuItem(title: "ReportBuddy", action: nil, keyEquivalent: "")
         appMenuItem.submenu = appMenu
         
-        appMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Informazioni su ReportBuddy", comment: ""),
-            action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)),
-            keyEquivalent: ""
-        ))
+        // About
+        appMenu.addItem(withTitle: NSLocalizedString("About ReportBuddy", comment: ""),
+                       action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)),
+                       keyEquivalent: "")
         
         appMenu.addItem(.separator())
         
-        appMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Verifica Aggiornamenti", comment: ""),
-            action: #selector(checkForUpdates),
-            keyEquivalent: "u"
-        ))
+        // Preferences
+        appMenu.addItem(withTitle: NSLocalizedString("Preferences...", comment: ""),
+                       action: #selector(openPreferences),
+                       keyEquivalent: ",")
         
         appMenu.addItem(.separator())
         
-        appMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Preferenze", comment: ""),
-            action: #selector(openPreferences),
-            keyEquivalent: ","
-        ))
+        // Check for Updates
+        appMenu.addItem(withTitle: NSLocalizedString("Check for Updates...", comment: ""),
+                       action: #selector(checkForUpdates),
+                       keyEquivalent: "u")
         
         appMenu.addItem(.separator())
         
-        let servicesMenu = NSMenu()
-        let servicesMenuItem = NSMenuItem(title: NSLocalizedString("Servizi", comment: ""), action: nil, keyEquivalent: "")
-        servicesMenuItem.submenu = servicesMenu
-        appMenu.addItem(servicesMenuItem)
-        NSApp.servicesMenu = servicesMenu
-        
-        appMenu.addItem(.separator())
-        
-        appMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Nascondi ReportBuddy", comment: ""),
-            action: #selector(NSApplication.hide(_:)),
-            keyEquivalent: "h"
-        ))
-        
-        let hideOthersItem = NSMenuItem(
-            title: NSLocalizedString("Nascondi altre", comment: ""),
-            action: #selector(NSApplication.hideOtherApplications(_:)),
-            keyEquivalent: "h"
-        )
-        hideOthersItem.keyEquivalentModifierMask = [.command, .option]
-        appMenu.addItem(hideOthersItem)
-        
-        appMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Mostra tutte", comment: ""),
-            action: #selector(NSApplication.unhideAllApplications(_:)),
-            keyEquivalent: ""
-        ))
-        
-        appMenu.addItem(.separator())
-        
-        appMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Esci", comment: ""),
-            action: #selector(NSApplication.terminate(_:)),
-            keyEquivalent: "q"
-        ))
+        // Quit
+        appMenu.addItem(withTitle: NSLocalizedString("Quit ReportBuddy", comment: ""),
+                       action: #selector(NSApplication.terminate(_:)),
+                       keyEquivalent: "q")
         
         // File Menu
-        let fileMenu = NSMenu(title: NSLocalizedString("File", comment: ""))
-        let fileMenuItem = NSMenuItem()
+        let fileMenu = NSMenu(title: "File")
+        let fileMenuItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
         fileMenuItem.submenu = fileMenu
         
-        fileMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Aggiorna", comment: ""),
-            action: #selector(refreshEvents),
-            keyEquivalent: "r"
-        ).with {
-            $0.isEnabled = true
-        })
+        fileMenu.addItem(withTitle: NSLocalizedString("Refresh", comment: ""),
+                        action: #selector(refreshEvents),
+                        keyEquivalent: "r")
         
-        fileMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Esporta via Email", comment: ""),
-            action: #selector(exportEmail),
-            keyEquivalent: "e"
-        ).with {
-            $0.isEnabled = true
-        })
+        fileMenu.addItem(withTitle: NSLocalizedString("Export via Email", comment: ""),
+                        action: #selector(exportViaEmail),
+                        keyEquivalent: "e")
         
         // Window Menu
-        let windowMenu = NSMenu(title: NSLocalizedString("Finestra", comment: ""))
-        let windowMenuItem = NSMenuItem()
+        let windowMenu = NSMenu(title: NSLocalizedString("Window", comment: ""))
+        let windowMenuItem = NSMenuItem(title: NSLocalizedString("Window", comment: ""), action: nil, keyEquivalent: "")
         windowMenuItem.submenu = windowMenu
         
-        windowMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Minimizza", comment: ""),
-            action: #selector(NSWindow.miniaturize(_:)),
-            keyEquivalent: "m"
-        ))
+        windowMenu.addItem(withTitle: NSLocalizedString("Minimize", comment: ""),
+                          action: #selector(NSWindow.miniaturize(_:)),
+                          keyEquivalent: "m")
         
-        windowMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Zoom", comment: ""),
-            action: #selector(NSWindow.zoom(_:)),
-            keyEquivalent: ""
-        ))
+        windowMenu.addItem(withTitle: NSLocalizedString("Zoom", comment: ""),
+                          action: #selector(NSWindow.zoom(_:)),
+                          keyEquivalent: "")
+        
+        windowMenu.addItem(.separator())
+        
+        windowMenu.addItem(withTitle: NSLocalizedString("Bring All to Front", comment: ""),
+                          action: #selector(NSApplication.arrangeInFront(_:)),
+                          keyEquivalent: "")
         
         // Help Menu
-        let helpMenu = NSMenu(title: NSLocalizedString("Aiuto", comment: ""))
-        let helpMenuItem = NSMenuItem()
+        let helpMenu = NSMenu(title: NSLocalizedString("Help", comment: ""))
+        let helpMenuItem = NSMenuItem(title: NSLocalizedString("Help", comment: ""), action: nil, keyEquivalent: "")
         helpMenuItem.submenu = helpMenu
         
-        helpMenu.addItem(NSMenuItem(
-            title: NSLocalizedString("Aiuto ReportBuddy", comment: ""),
-            action: #selector(showHelp),
-            keyEquivalent: "?"
-        ))
+        helpMenu.addItem(withTitle: NSLocalizedString("ReportBuddy Help", comment: ""),
+                        action: #selector(showHelp),
+                        keyEquivalent: "?")
         
-        // Add all menus to the main menu
+        // Add all menus to main menu
         mainMenu.addItem(appMenuItem)
         mainMenu.addItem(fileMenuItem)
         mainMenu.addItem(windowMenuItem)
         mainMenu.addItem(helpMenuItem)
         
         NSApplication.shared.mainMenu = mainMenu
-        
-        // Controlla gli aggiornamenti
-        Task {
-            await updateService.checkForUpdates()
-            if updateService.updateAvailable {
-                await MainActor.run {
-                    showUpdateAlert()
-                }
-            }
-        }
+        NSApplication.shared.windowsMenu = windowMenu
     }
     
     @objc func openPreferences() {
@@ -167,61 +102,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 backing: .buffered,
                 defer: false
             )
-            settingsWindow?.title = NSLocalizedString("Preferenze", comment: "")
+            settingsWindow?.title = NSLocalizedString("Preferences", comment: "")
             settingsWindow?.contentView = NSHostingView(rootView: contentView)
             settingsWindow?.center()
         }
         
         settingsWindow?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
-    }
-    
-    @objc func refreshEvents() {
-        NotificationCenter.default.post(name: .refreshEvents, object: nil)
-    }
-    
-    @objc func exportEmail() {
-        NotificationCenter.default.post(name: .exportEmail, object: nil)
-    }
-    
-    @objc func showHelp() {
-        let language = Locale.current.language.languageCode?.identifier ?? "en"
-        let helpFileName = "Help.\(language)"
-        
-        if let helpURL = Bundle.main.url(forResource: helpFileName, withExtension: "html") {
-            let helpWindow = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 800, height: 600),
-                styleMask: [.titled, .closable, .miniaturizable, .resizable],
-                backing: .buffered,
-                defer: false
-            )
-            
-            let webView = WKWebView(frame: .zero)
-            webView.loadFileURL(helpURL, allowingReadAccessTo: helpURL.deletingLastPathComponent())
-            
-            helpWindow.contentView = webView
-            helpWindow.title = NSLocalizedString("Aiuto ReportBuddy", comment: "")
-            helpWindow.center()
-            helpWindow.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
-        }
-    }
-    
-    func showUpdateAlert() {
-        let alert = NSAlert()
-        alert.messageText = NSLocalizedString("Aggiornamento Disponibile", comment: "")
-        alert.informativeText = updateService.releaseNotes ?? ""
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: NSLocalizedString("Scarica", comment: ""))
-        alert.addButton(withTitle: NSLocalizedString("Non ora", comment: ""))
-        
-        let response = alert.runModal()
-        if response == .alertFirstButtonReturn {
-            if let urlString = updateService.downloadURL,
-               let url = URL(string: urlString) {
-                NSWorkspace.shared.open(url)
-            }
-        }
     }
     
     @objc func checkForUpdates() {
@@ -239,13 +125,52 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    func showNoUpdatesAlert() {
+    private func showUpdateAlert() {
+        let alert = NSAlert()
+        alert.messageText = NSLocalizedString("Aggiornamento Disponibile", comment: "")
+        alert.informativeText = updateService.releaseNotes ?? ""
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: NSLocalizedString("Scarica", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Non ora", comment: ""))
+        
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            if let urlString = updateService.downloadURL,
+               let url = URL(string: urlString) {
+                NSWorkspace.shared.open(url)
+            }
+        }
+    }
+    
+    private func showNoUpdatesAlert() {
         let alert = NSAlert()
         alert.messageText = NSLocalizedString("Nessun Aggiornamento", comment: "")
         alert.informativeText = NSLocalizedString("Stai utilizzando l'ultima versione di ReportBuddy", comment: "")
         alert.alertStyle = .informational
         alert.addButton(withTitle: NSLocalizedString("OK", comment: ""))
         alert.runModal()
+    }
+    
+    @objc func refreshEvents() {
+        NotificationCenter.default.post(name: Notification.Name("RefreshEvents"), object: nil)
+    }
+    
+    @objc func exportViaEmail() {
+        NotificationCenter.default.post(name: Notification.Name("ExportEmail"), object: nil)
+    }
+    
+    @objc func showHelp() {
+        let alert = NSAlert()
+        alert.messageText = NSLocalizedString("ReportBuddy Help", comment: "")
+        alert.informativeText = NSLocalizedString("La documentazione è disponibile su GitHub", comment: "")
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: NSLocalizedString("Apri nel Browser", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Annulla", comment: ""))
+        
+        if alert.runModal() == .alertFirstButtonReturn {
+            let helpURL = URL(string: "https://github.com/philsaino/ReportBuddy/wiki")!
+            NSWorkspace.shared.open(helpURL)
+        }
     }
 }
 

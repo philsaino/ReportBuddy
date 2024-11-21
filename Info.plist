@@ -2,24 +2,28 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleName</key>
-	<string>ReportBuddy</string>
-	<key>CFBundleDisplayName</key>
-	<string>ReportBuddy</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.yourcompany.ReportBuddy</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>L'app necessita di accesso ai tuoi calendari per leggere gli eventi</string>
-	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>L'app necessita di accesso completo ai tuoi calendari per leggere gli eventi e generare report</string>
-	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
-	<string>L'app necessita di accesso ai tuoi calendari</string>
-	<key>NSAppleEventsUsageDescription</key>
-	<string>L'app necessita di accesso agli eventi del calendario per funzionare correttamente</string>
+	<key>CFBundleGetInfoString</key>
+	<string>ReportBuddy by Filippo Saino</string>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>it</string>
 		<string>en</string>
 	</array>
+	<key>Credits</key>
+	<string>Created by Filippo Saino
+GitHub: @philsaino (https://github.com/philsaino)
+
+Special thanks to:
+@lorenzo-allevi for testing and suggestions</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>L'app necessita di accesso completo ai tuoi calendari per leggere gli eventi e generare report</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>L'app necessita di accesso ai tuoi calendari</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>© 2024 Filippo Saino. All rights reserved.</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.2.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
 </dict>
 </plist>

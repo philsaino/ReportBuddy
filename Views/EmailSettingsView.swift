@@ -260,65 +260,114 @@ struct NewTemplateView: View {
     @State private var footerMessage = ""
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section {
-                    TextField(LocalizedStringKey("Nome Template"), text: $templateName)
-                        .textFieldStyle(.roundedBorder)
+        VStack(spacing: 0) {
+            // Header con titolo
+            VStack {
+                Text(LocalizedStringKey("Nuovo Template"))
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .padding(.top, 24)
+            }
+            .padding(.horizontal, 24)
+            
+            Divider()
+                .padding(.vertical, 8)
+            
+            // Content Area
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    // Nome Template
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(LocalizedStringKey("Nome Template"))
+                            .font(.headline)
+                        TextField(LocalizedStringKey("Nome Template"), text: $templateName)
+                            .textFieldStyle(.roundedBorder)
+                    }
                     
-                    TextField(LocalizedStringKey("Destinatario Email"), text: $recipient)
-                        .textFieldStyle(.roundedBorder)
-                        .textContentType(.emailAddress)
+                    // Recipient
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(LocalizedStringKey("Destinatario Email"))
+                            .font(.headline)
+                        TextField(LocalizedStringKey("Inserisci indirizzo email"), text: $recipient)
+                            .textFieldStyle(.roundedBorder)
+                            .textContentType(.emailAddress)
+                    }
                     
-                    TextField(LocalizedStringKey("Oggetto Email"), text: $subject)
-                        .textFieldStyle(.roundedBorder)
+                    // Subject
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(LocalizedStringKey("Oggetto Email"))
+                            .font(.headline)
+                        TextField(LocalizedStringKey("Inserisci oggetto"), text: $subject)
+                            .textFieldStyle(.roundedBorder)
+                        
+                        Text(LocalizedStringKey("Variabili disponibili:"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(LocalizedStringKey("$month - Mese corrente"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(LocalizedStringKey("$year - Anno corrente"))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                     
-                    VStack(alignment: .leading, spacing: 8) {
+                    // Header Message
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(LocalizedStringKey("Messaggio Iniziale"))
                             .font(.headline)
                         TextEditor(text: $headerMessage)
                             .frame(height: 100)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray.opacity(0.2))
-                            )
-                        
+                            .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.gray.opacity(0.2)))
+                            .background(Color(NSColor.textBackgroundColor))
+                    }
+                    
+                    // Footer Message
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(LocalizedStringKey("Messaggio Finale"))
                             .font(.headline)
                         TextEditor(text: $footerMessage)
                             .frame(height: 100)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray.opacity(0.2))
-                            )
+                            .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.gray.opacity(0.2)))
+                            .background(Color(NSColor.textBackgroundColor))
                     }
                 }
+                .padding(24)
+                .background(Color(NSColor.windowBackgroundColor))
+                .cornerRadius(8)
+                .padding(.horizontal, 24)
             }
-            .formStyle(.grouped)
-            .navigationTitle(LocalizedStringKey("Nuovo Template"))
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(LocalizedStringKey("Annulla")) {
-                        dismiss()
-                    }
+            
+            Divider()
+                .padding(.vertical, 8)
+            
+            // Footer con pulsanti
+            HStack {
+                Button(LocalizedStringKey("Annulla")) {
+                    dismiss()
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(LocalizedStringKey("Salva")) {
-                        let newTemplate = EmailTemplate(
-                            id: UUID().uuidString,
-                            name: templateName,
-                            subject: subject,
-                            recipient: recipient,
-                            headerMessage: headerMessage,
-                            footerMessage: footerMessage
-                        )
-                        settings.emailTemplates.append(newTemplate)
-                        dismiss()
-                    }
-                    .disabled(templateName.isEmpty)
+                .keyboardShortcut(.escape, modifiers: [])
+                
+                Spacer()
+                
+                Button(LocalizedStringKey("Salva")) {
+                    let newTemplate = EmailTemplate(
+                        id: UUID().uuidString,
+                        name: templateName,
+                        subject: subject,
+                        recipient: recipient,
+                        headerMessage: headerMessage,
+                        footerMessage: footerMessage
+                    )
+                    settings.emailTemplates.append(newTemplate)
+                    dismiss()
                 }
+                .keyboardShortcut(.return, modifiers: [])
+                .disabled(templateName.isEmpty)
             }
+            .padding(24)
+            .background(Color(NSColor.windowBackgroundColor))
         }
+        .background(Color(NSColor.windowBackgroundColor))
         .frame(width: 500, height: 700)
         .fixedSize()
     }

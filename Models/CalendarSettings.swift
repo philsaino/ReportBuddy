@@ -28,6 +28,9 @@ struct CalendarSettings: Codable {
         selectedTemplateId: "default",
         dateRange: DateRangeSettings()
     )
+    
+    static let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.2.0"
+    static let copyright = Bundle.main.infoDictionary?["NSHumanReadableCopyright"] as? String ?? "© 2024 Filippo Saino"
 }
 
 struct EmailTemplate: Codable, Identifiable {
