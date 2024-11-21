@@ -1,15 +1,14 @@
-// Titles
+// Main Titles
 "Report Eventi" = "Events Report";
+"ReportBuddy" = "ReportBuddy";
+
+// Sections
 "Calendari" = "Calendars";
 "Parole Chiave" = "Keywords";
+"Template Email" = "Email Template";
+"Intervallo Date" = "Date Range";
 "Eventi del mese corrente" = "Current Month Events";
-"Lingua Email" = "Email Language";
-"Impostazioni Email" = "Email Settings";
-"Destinatario" = "Recipient";
-"Oggetto" = "Subject";
-"Variabili disponibili:" = "Available variables:";
-"Salva" = "Save";
-"Configura Email" = "Configure Email";
+"Eventi dal %@ al %@" = "Events from %@ to %@";
 
 // Actions
 "Seleziona..." = "Select...";
@@ -18,27 +17,72 @@
 "Rimuovi" = "Remove";
 "Esporta" = "Export";
 "Esporta via Email" = "Export via Email";
+"Fine" = "Done";
+"Annulla" = "Cancel";
+"Salva" = "Save";
 
-// Placeholder
+// Placeholders and messages
 "Nuova parola chiave" = "New keyword";
 "Senza titolo" = "Untitled";
-
-// Messages
 "Nessun evento trovato" = "No events found";
 "Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi" = "Select a calendar and add keywords to see events";
-"Aggiorna la lista degli eventi" = "Refresh events list";
-"Esporta eventi via email" = "Export events via email";
 
-// Report Email
-"Report Eventi\n\n" = "Events Report\n\n";
-"Totale eventi: " = "Total events: ";
+// Email Template
+"Seleziona Template" = "Select Template";
+"Configura Template" = "Configure Template";
+"Nuovo Template" = "New Template";
+"Nome Template" = "Template Name";
+"Rinomina Template" = "Rename Template";
+"Elimina Template" = "Delete Template";
+"Inserisci il nuovo nome per il template" = "Enter new template name";
+"Sei sicuro di voler eliminare questo template?" = "Are you sure you want to delete this template?";
+"Rinomina" = "Rename";
+"Elimina" = "Delete";
+"Nuovo" = "New";
 
-// Email Settings Dialog
+// Email Settings
 "Destinatario Email" = "Email Recipient";
 "Inserisci indirizzo email" = "Enter email address";
 "Oggetto Email" = "Email Subject";
 "Inserisci oggetto" = "Enter subject";
+"Messaggio Iniziale" = "Header Message";
+"Messaggio Finale" = "Footer Message";
+"Lingua Email" = "Email Language";
+"Variabili disponibili:" = "Available variables:";
 "$month - Mese corrente" = "$month - Current month";
 "$year - Anno corrente" = "$year - Current year";
+
+// Languages
+"Italiano" = "Italian";
+"English" = "English";
+
+// Date Range
+"Usa intervallo personalizzato" = "Use custom range";
+"Data Inizio" = "Start Date";
+"Data Fine" = "End Date";
+
+// Others
 "Solo eventi giornata intera" = "All-day events only";
+"Totale eventi: " = "Total events: ";
+"Preferenze" = "Preferences";
+"Esci" = "Quit";
+"Informazioni su ReportBuddy" = "About ReportBuddy";
+"Servizi" = "Services";
+"Nascondi ReportBuddy" = "Hide ReportBuddy";
+"Nascondi altre" = "Hide Others";
+"Mostra tutte" = "Show All";
+"File" = "File";
+"Finestra" = "Window";
+"Minimizza" = "Minimize";
+"Zoom" = "Zoom";
+"Aiuto" = "Help";
+"Aiuto ReportBuddy" = "ReportBuddy Help";
+"Aggiornamento Disponibile" = "Update Available";
+"Versione %@" = "Version %@";
+"Non ora" = "Not Now";
+"Scarica" = "Download";
+"Verifica Aggiornamenti" = "Check for Updates";
+"Nessun Aggiornamento" = "No Updates Available";
+"Stai utilizzando l'ultima versione di ReportBuddy" = "You are using the latest version of ReportBuddy";
+"OK" = "OK";
   

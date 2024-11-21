@@ -10,66 +10,159 @@ import EventKit
 
 struct ContentView: View {
     @StateObject private var viewModel = CalendarViewModel()
-    @State private var newKeyword = ""
-    @State private var selectedCalendar: String? = nil
     @State private var showingEmailSettings = false
+    @State private var newKeyword = ""
+    @FocusState private var keywordFocus: Bool
     
     var body: some View {
         NavigationSplitView {
-            // Sidebar con le impostazioni
+            // Sidebar
             List {
                 Section(LocalizedStringKey("Calendari")) {
-                    Picker("", selection: $selectedCalendar) {
-                        Text(LocalizedStringKey("Seleziona...")).tag(nil as String?)
-                        ForEach(Dictionary(grouping: viewModel.calendars) { $0.source.title }
-                                .sorted(by: { $0.key < $1.key }), id: \.key) { sourceTitle, calendars in
-                            Section(header: Text(sourceTitle)) {
-                                ForEach(calendars, id: \.calendarIdentifier) { calendar in
-                                    Label {
-                                        Text(calendar.title)
-                                    } icon: {
-                                        Circle()
-                                            .fill(Color(cgColor: calendar.cgColor))
-                                            .frame(width: 10, height: 10)
-                                    }
-                                    .tag(calendar.calendarIdentifier as String?)
-                                }
-                            }
+                    Menu {
+                        calendarMenuContent()
+                    } label: {
+                        HStack {
+                            Label(LocalizedStringKey("Seleziona..."), systemImage: "calendar")
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.secondary)
                         }
                     }
-                    .pickerStyle(.menu)
-                    .onChange(of: selectedCalendar) { oldValue, newValue in
-                        if let calendarId = newValue {
-                            viewModel.settings.selectedCalendarIds.insert(calendarId)
-                            viewModel.saveSettings()
-                            selectedCalendar = nil
-                        }
-                    }
+                    .menuStyle(.borderlessButton)
+                    .padding(.vertical, 4)
                     
-                    if !viewModel.settings.selectedCalendarIds.isEmpty {
-                        ForEach(Array(viewModel.settings.selectedCalendarIds), id: \.self) { calendarId in
-                            if let calendar = viewModel.calendars.first(where: { $0.calendarIdentifier == calendarId }) {
-                                HStack {
-                                    Circle()
-                                        .fill(Color(cgColor: calendar.cgColor))
-                                        .frame(width: 10, height: 10)
-                                    Text(calendar.title)
-                                    Spacer()
-                                    Button(action: {
-                                        viewModel.settings.selectedCalendarIds.remove(calendarId)
-                                        viewModel.saveSettings()
-                                    }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(.red)
-                                    }
-                                    .buttonStyle(.plain)
+                    // Lista dei calendari selezionati
+                    ForEach(Array(viewModel.settings.selectedCalendarIds), id: \.self) { calendarId in
+                        if let calendar = viewModel.calendars.first(where: { $0.calendarIdentifier == calendarId }) {
+                            HStack {
+                                Circle()
+                                    .fill(Color(cgColor: calendar.cgColor))
+                                    .frame(width: 10, height: 10)
+                                Text(calendar.title)
+                                Spacer()
+                                Button(action: {
+                                    viewModel.settings.selectedCalendarIds.remove(calendarId)
+                                    viewModel.saveSettings()
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.red)
                                 }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
                 }
                 
+                Section(LocalizedStringKey("Template Email")) {
+                    Menu {
+                        ForEach(viewModel.settings.emailTemplates) { template in
+                            Button(action: {
+                                viewModel.settings.selectedTemplateId = template.id
+                                viewModel.saveSettings()
+                            }) {
+                                HStack {
+                                    if viewModel.settings.selectedTemplateId == template.id {
+                                        Image(systemName: "checkmark")
+                                    }
+                                    Text(template.name)
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            if let selectedTemplate = viewModel.settings.emailTemplates.first(where: { $0.id == viewModel.settings.selectedTemplateId }) {
+                                Label(selectedTemplate.name, systemImage: "envelope.badge.fill")
+                            } else {
+                                Label(LocalizedStringKey("Seleziona Template"), systemImage: "envelope.badge.fill")
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .menuStyle(.borderlessButton)
+                    .padding(.vertical, 4)
+                }
+                
+                Section(LocalizedStringKey("Intervallo Date")) {
+                    Toggle(LocalizedStringKey("Usa intervallo personalizzato"), isOn: Binding(
+                        get: { viewModel.settings.dateRange.useCustomRange },
+                        set: { newValue in
+                            var newSettings = viewModel.settings
+                            newSettings.dateRange.useCustomRange = newValue
+                            viewModel.updateSettings(newSettings)
+                        }
+                    ))
+                    
+                    if viewModel.settings.dateRange.useCustomRange {
+                        DatePicker(
+                            LocalizedStringKey("Data Inizio"),
+                            selection: Binding(
+                                get: { viewModel.settings.dateRange.startDate },
+                                set: { newValue in
+                                    var newSettings = viewModel.settings
+                                    newSettings.dateRange.startDate = newValue
+                                    viewModel.updateSettings(newSettings)
+                                }
+                            ),
+                            displayedComponents: [.date]
+                        )
+                        
+                        DatePicker(
+                            LocalizedStringKey("Data Fine"),
+                            selection: Binding(
+                                get: { viewModel.settings.dateRange.endDate },
+                                set: { newValue in
+                                    var newSettings = viewModel.settings
+                                    newSettings.dateRange.endDate = newValue
+                                    viewModel.updateSettings(newSettings)
+                                }
+                            ),
+                            displayedComponents: [.date]
+                        )
+                    }
+                }
+                
                 Section(LocalizedStringKey("Parole Chiave")) {
+                    ForEach(viewModel.settings.eventKeywords, id: \.self) { keyword in
+                        HStack {
+                            if viewModel.editingKeyword == keyword {
+                                TextField("", text: $viewModel.editedKeywordText)
+                                    .textFieldStyle(.roundedBorder)
+                                    .onSubmit {
+                                        if !viewModel.editedKeywordText.isEmpty {
+                                            viewModel.updateKeyword(oldKeyword: keyword, newKeyword: viewModel.editedKeywordText)
+                                        }
+                                        viewModel.editingKeyword = nil
+                                    }
+                                    .onExitCommand {
+                                        viewModel.editingKeyword = nil
+                                    }
+                                    .focused($keywordFocus)
+                                    .task {
+                                        keywordFocus = true
+                                    }
+                            } else {
+                                Text(keyword)
+                                    .contentShape(Rectangle())
+                                    .onTapGesture(count: 2) {
+                                        viewModel.editingKeyword = keyword
+                                        viewModel.editedKeywordText = keyword
+                                    }
+                            }
+                            Spacer()
+                            Button(action: {
+                                viewModel.removeKeyword(keyword)
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.vertical, 2)
+                    }
+                    
                     HStack {
                         TextField(LocalizedStringKey("Nuova parola chiave"), text: $newKeyword)
                             .textFieldStyle(.roundedBorder)
@@ -85,145 +178,145 @@ struct ContentView: View {
                                 newKeyword = ""
                             }
                         }
-                        .buttonStyle(.borderless)
-                    }
-                    
-                    ForEach(viewModel.settings.eventKeywords, id: \.self) { keyword in
-                        HStack {
-                            Label(keyword, systemImage: "tag")
-                            Spacer()
-                            Button(action: {
-                                viewModel.removeKeyword(keyword)
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.red)
-                            }
-                            .buttonStyle(.plain)
-                        }
+                        .disabled(newKeyword.isEmpty)
                     }
                 }
                 
-                Section(LocalizedStringKey("Lingua Email")) {
-                    Picker("", selection: $viewModel.settings.emailLanguage) {
-                        Text("Italiano").tag("it")
-                        Text("English").tag("en")
-                    }
-                    .pickerStyle(.menu)
-                    .onChange(of: viewModel.settings.emailLanguage) { _, _ in
-                        viewModel.saveSettings()
-                    }
-                    
-                    Toggle(LocalizedStringKey("Solo eventi giornata intera"), isOn: $viewModel.settings.onlyAllDayEvents)
-                        .onChange(of: viewModel.settings.onlyAllDayEvents) { _, _ in
-                            viewModel.saveSettings()
+                Section {
+                    Toggle(LocalizedStringKey("Solo eventi giornata intera"), isOn: Binding(
+                        get: { viewModel.settings.onlyAllDayEvents },
+                        set: { newValue in
+                            var newSettings = viewModel.settings
+                            newSettings.onlyAllDayEvents = newValue
+                            viewModel.updateSettings(newSettings)
                         }
-                }
-                
-                Section("Impostazioni Email") {
-                    Button(action: {
-                        showingEmailSettings = true
-                    }) {
-                        Label(LocalizedStringKey("Configura Email"), systemImage: "envelope.circle")
-                    }
+                    ))
                 }
             }
-            .listStyle(.sidebar)
+            .navigationTitle("ReportBuddy")
         } detail: {
-            // Area principale con la lista degli eventi
+            // Main Content
             VStack {
-                Text(LocalizedStringKey("Eventi del mese corrente"))
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                if viewModel.currentEvents.isEmpty {
-                    ContentUnavailableView(
-                        LocalizedStringKey("Nessun evento trovato"),
-                        systemImage: "calendar.badge.exclamationmark",
-                        description: Text(LocalizedStringKey("Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi"))
-                    )
-                } else {
-                    List(viewModel.currentEvents, id: \.self) { event in
-                        if let calendar = viewModel.calendars.first(where: { $0.calendarIdentifier == event.calendar.calendarIdentifier }) {
-                            EventRow(event: event, calendar: calendar)
-                                .id("\(String(describing: event.eventIdentifier))_\(event.startDate.timeIntervalSince1970)")
+                Form {
+                    Section(getEventsTitle()) {
+                        if viewModel.events.isEmpty {
+                            Text(LocalizedStringKey("Nessun evento trovato"))
+                                .foregroundColor(.secondary)
+                        } else {
+                            ForEach(viewModel.events, id: \.eventIdentifier) { event in
+                                if let calendar = viewModel.calendars.first(where: { $0.calendarIdentifier == event.calendar?.calendarIdentifier }) {
+                                    EventRow(event: event, calendar: calendar)
+                                }
+                            }
+                        }
+                    }
+                }
+                .formStyle(.grouped)
+                .navigationTitle(LocalizedStringKey("Report Eventi"))
+                .toolbar {
+                    ToolbarItemGroup(placement: .navigation) {
+                        Button(action: {
+                            viewModel.refreshEvents()
+                        }) {
+                            Label(LocalizedStringKey("Aggiorna"), systemImage: "arrow.clockwise")
+                        }
+                        
+                        Button(action: {
+                            showingEmailSettings = true
+                        }) {
+                            Label(LocalizedStringKey("Configura Email"), systemImage: "gear")
                         }
                     }
                 }
                 
-                Divider()
-                
+                // Export Button
                 HStack {
                     Spacer()
                     Button(action: {
                         EmailComposer.composeEmail(
-                            events: viewModel.currentEvents,
-                            language: viewModel.settings.emailLanguage,
-                            subject: viewModel.settings.emailSubject,
-                            recipient: viewModel.settings.emailRecipient,
-                            onlyAllDayEvents: viewModel.settings.onlyAllDayEvents
+                            events: viewModel.events,
+                            settings: viewModel.settings
                         )
                     }) {
                         Label(LocalizedStringKey("Esporta via Email"), systemImage: "envelope")
                     }
-                    .keyboardShortcut("E", modifiers: .command)
-                    .disabled(viewModel.currentEvents.isEmpty)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(viewModel.events.isEmpty)
+                    .padding()
                 }
-                .padding()
+            }
+            .sheet(isPresented: $showingEmailSettings) {
+                EmailSettingsView(settings: $viewModel.settings)
             }
         }
-        .navigationTitle(LocalizedStringKey("Report Eventi"))
-        .sheet(isPresented: $showingEmailSettings) {
-            EmailSettingsView(settings: $viewModel.settings)
-                .onDisappear {
-                    viewModel.saveSettings()
-                }
+        .onAppear {
+            setupNotificationObservers()
         }
-        .alert("Errore", isPresented: Binding(
-            get: { viewModel.errorMessage != nil },
-            set: { if !$0 { viewModel.clearError() } }
-        )) {
-            Button("OK") {
-                viewModel.clearError()
-            }
-        } message: {
-            if let errorMessage = viewModel.errorMessage {
-                Text(errorMessage)
-            }
+    }
+    
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            forName: .refreshEvents,
+            object: nil,
+            queue: .main
+        ) { _ in
+            viewModel.refreshEvents()
         }
-        .frame(minWidth: 700, minHeight: 400)
-        .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button(action: {
-                    viewModel.reloadEvents()
-                }) {
-                    Label(LocalizedStringKey("Aggiorna"), systemImage: "arrow.clockwise")
-                }
-                .help(LocalizedStringKey("Aggiorna la lista degli eventi"))
-            }
-            
-            ToolbarItem(placement: .automatic) {
-                Button(action: {
-                    EmailComposer.composeEmail(
-                        events: viewModel.currentEvents,
-                        language: viewModel.settings.emailLanguage,
-                        subject: viewModel.settings.emailSubject,
-                        recipient: viewModel.settings.emailRecipient,
-                        onlyAllDayEvents: viewModel.settings.onlyAllDayEvents
-                    )
-                }) {
-                    Label(LocalizedStringKey("Esporta"), systemImage: "square.and.arrow.up")
-                }
-                .help(LocalizedStringKey("Esporta eventi via email"))
-                .disabled(viewModel.currentEvents.isEmpty)
+        
+        NotificationCenter.default.addObserver(
+            forName: .exportEmail,
+            object: nil,
+            queue: .main
+        ) { _ in
+            if !viewModel.events.isEmpty {
+                EmailComposer.composeEmail(
+                    events: viewModel.events,
+                    settings: viewModel.settings
+                )
             }
         }
-        .overlay {
-            if viewModel.isLoading {
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(.ultraThinMaterial)
+    }
+    
+    private func calendarMenuContent() -> some View {
+        let groupedCalendars = Dictionary(grouping: viewModel.calendars) { $0.source.title }
+        
+        return ForEach(groupedCalendars.keys.sorted(), id: \.self) { sourceTitle in
+            if let calendars = groupedCalendars[sourceTitle] {
+                Menu(sourceTitle) {
+                    ForEach(calendars.sorted { $0.title < $1.title }, id: \.calendarIdentifier) { cal in
+                        Button(action: {
+                            if viewModel.settings.selectedCalendarIds.contains(cal.calendarIdentifier) {
+                                viewModel.settings.selectedCalendarIds.remove(cal.calendarIdentifier)
+                            } else {
+                                viewModel.settings.selectedCalendarIds.insert(cal.calendarIdentifier)
+                            }
+                            viewModel.saveSettings()
+                        }) {
+                            HStack {
+                                if viewModel.settings.selectedCalendarIds.contains(cal.calendarIdentifier) {
+                                    Image(systemName: "checkmark")
+                                }
+                                Circle()
+                                    .fill(Color(cgColor: cal.cgColor))
+                                    .frame(width: 12, height: 12)
+                                Text(cal.title)
+                            }
+                        }
+                    }
+                }
             }
+        }
+    }
+    
+    private func getEventsTitle() -> LocalizedStringKey {
+        if viewModel.settings.dateRange.useCustomRange {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .medium
+            let startDate = dateFormatter.string(from: viewModel.settings.dateRange.startDate)
+            let endDate = dateFormatter.string(from: viewModel.settings.dateRange.endDate)
+            return LocalizedStringKey("Eventi dal \(startDate) al \(endDate)")
+        } else {
+            return LocalizedStringKey("Eventi del mese corrente")
         }
     }
 }
@@ -233,48 +326,42 @@ struct EventRow: View {
     let calendar: EKCalendar
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
+            // Titolo dell'evento
             HStack {
                 Circle()
                     .fill(Color(cgColor: calendar.cgColor))
-                    .frame(width: 8, height: 8)
-                
-                Text(event.title ?? "Senza titolo")
+                    .frame(width: 10, height: 10)
+                Text(event.title ?? NSLocalizedString("Senza titolo", comment: ""))
                     .font(.headline)
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(calendar.title)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    
-                    Text(calendar.source.title)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary.opacity(0.8))
-                }
             }
             
-            Text(event.startDate.formatted(date: .long, time: .omitted))
+            // Data dell'evento
+            Text(event.startDate, style: .date)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
+            
+            // Calendario e Account
+            HStack {
+                Image(systemName: "calendar")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+                Text(calendar.title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                Divider()
+                    .frame(height: 8)
+                
+                Image(systemName: "person.circle")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+                Text(calendar.source.title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
         .padding(.vertical, 4)
-        .contentShape(Rectangle())
-        .contextMenu {
-            Button(action: {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(event.title ?? "", forType: .string)
-            }) {
-                Label("Copia Titolo", systemImage: "doc.on.doc")
-            }
-            
-            Button(action: {
-                NSWorkspace.shared.open(URL(string: "calshow://")!)
-            }) {
-                Label("Apri in Calendario", systemImage: "calendar")
-            }
-        }
     }
 }
 

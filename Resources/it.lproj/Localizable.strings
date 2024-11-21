@@ -1,9 +1,14 @@
-// Titoli
+// Titoli principali
 "Report Eventi" = "Report Eventi";
+"ReportBuddy" = "ReportBuddy";
+
+// Sezioni
 "Calendari" = "Calendari";
 "Parole Chiave" = "Parole Chiave";
+"Template Email" = "Template Email";
+"Intervallo Date" = "Intervallo Date";
 "Eventi del mese corrente" = "Eventi del mese corrente";
-"Lingua Email" = "Lingua Email";
+"Eventi dal %@ al %@" = "Eventi dal %@ al %@";
 
 // Azioni
 "Seleziona..." = "Seleziona...";
@@ -12,36 +17,74 @@
 "Rimuovi" = "Rimuovi";
 "Esporta" = "Esporta";
 "Esporta via Email" = "Esporta via Email";
-
-// Placeholder
-"Nuova parola chiave" = "Nuova parola chiave";
-"Senza titolo" = "Senza titolo";
-
-// Messaggi
-"Nessun evento trovato" = "Nessun evento trovato";
-"Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi" = "Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi";
-"Aggiorna la lista degli eventi" = "Aggiorna la lista degli eventi";
-"Esporta eventi via email" = "Esporta eventi via email";
-
-// Report Email
-"Report Eventi\n\n" = "Report Eventi\n\n";
-"Totale eventi: " = "Totale eventi: ";
-
-// Impostazioni Email
-"Impostazioni Email" = "Impostazioni Email";
-"Destinatario" = "Destinatario";
-"Oggetto" = "Oggetto";
-"Variabili disponibili:" = "Variabili disponibili:";
+"Fine" = "Fine";
+"Annulla" = "Annulla";
 "Salva" = "Salva";
 
-"Configura Email" = "Configura Email";
+// Placeholder e messaggi
+"Nuova parola chiave" = "Nuova parola chiave";
+"Senza titolo" = "Senza titolo";
+"Nessun evento trovato" = "Nessun evento trovato";
+"Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi" = "Seleziona un calendario e aggiungi delle parole chiave per vedere gli eventi";
 
-// Email Settings Dialog
+// Template Email
+"Seleziona Template" = "Seleziona Template";
+"Configura Template" = "Configura Template";
+"Nuovo Template" = "Nuovo Template";
+"Nome Template" = "Nome Template";
+"Rinomina Template" = "Rinomina Template";
+"Elimina Template" = "Elimina Template";
+"Inserisci il nuovo nome per il template" = "Inserisci il nuovo nome per il template";
+"Sei sicuro di voler eliminare questo template?" = "Sei sicuro di voler eliminare questo template?";
+"Rinomina" = "Rinomina";
+"Elimina" = "Elimina";
+"Nuovo" = "Nuovo";
+
+// Impostazioni Email
 "Destinatario Email" = "Destinatario Email";
 "Inserisci indirizzo email" = "Inserisci indirizzo email";
 "Oggetto Email" = "Oggetto Email";
 "Inserisci oggetto" = "Inserisci oggetto";
+"Messaggio Iniziale" = "Messaggio Iniziale";
+"Messaggio Finale" = "Messaggio Finale";
+"Lingua Email" = "Lingua Email";
+"Variabili disponibili:" = "Variabili disponibili:";
 "$month - Mese corrente" = "$month - Mese corrente";
 "$year - Anno corrente" = "$year - Anno corrente";
+
+// Lingue
+"Italiano" = "Italiano";
+"English" = "English";
+
+// Intervallo Date
+"Usa intervallo personalizzato" = "Usa intervallo personalizzato";
+"Data Inizio" = "Data Inizio";
+"Data Fine" = "Data Fine";
+
+// Altri
 "Solo eventi giornata intera" = "Solo eventi giornata intera";
+"Totale eventi: " = "Totale eventi: ";
+
+// Menu
+"Preferenze" = "Preferenze";
+"Esci" = "Esci";
+"Informazioni su ReportBuddy" = "Informazioni su ReportBuddy";
+"Servizi" = "Servizi";
+"Nascondi ReportBuddy" = "Nascondi ReportBuddy";
+"Nascondi altre" = "Nascondi altre";
+"Mostra tutte" = "Mostra tutte";
+"File" = "File";
+"Finestra" = "Finestra";
+"Minimizza" = "Minimizza";
+"Zoom" = "Zoom";
+"Aiuto" = "Aiuto";
+"Aiuto ReportBuddy" = "Aiuto ReportBuddy";
+"Aggiornamento Disponibile" = "Aggiornamento Disponibile";
+"Versione %@" = "Versione %@";
+"Non ora" = "Non ora";
+"Scarica" = "Scarica";
+"Verifica Aggiornamenti" = "Verifica Aggiornamenti";
+"Nessun Aggiornamento" = "Nessun Aggiornamento";
+"Stai utilizzando l'ultima versione di ReportBuddy" = "Stai utilizzando l'ultima versione di ReportBuddy";
+"OK" = "OK";
   

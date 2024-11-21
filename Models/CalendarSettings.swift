@@ -4,18 +4,63 @@ struct CalendarSettings: Codable {
     var selectedCalendarIds: Set<String>
     var eventKeywords: [String]
     var emailLanguage: String
-    var emailSubject: String
-    var emailRecipient: String
     var onlyAllDayEvents: Bool
+    var emailTemplates: [EmailTemplate]
+    var selectedTemplateId: String?
+    var dateRange: DateRangeSettings
     
     static let defaultSettings = CalendarSettings(
         selectedCalendarIds: [],
         eventKeywords: [],
         emailLanguage: Locale.current.language.languageCode?.identifier ?? "en",
-        emailSubject: "Report presenze buoni pasto - $month $year",
-        emailRecipient: "",
-        onlyAllDayEvents: true
+        onlyAllDayEvents: true,
+        emailTemplates: [
+            EmailTemplate(
+                id: "default",
+                name: "Template Standard",
+                subject: "Report presenze buoni pasto - $month $year",
+                recipient: "",
+                headerMessage: "Gentile,\n\ndi seguito il report degli eventi del calendario:",
+                footerMessage: "\nCordiali saluti",
+                language: nil
+            )
+        ],
+        selectedTemplateId: "default",
+        dateRange: DateRangeSettings()
     )
+}
+
+struct EmailTemplate: Codable, Identifiable {
+    let id: String
+    var name: String
+    var subject: String
+    var recipient: String
+    var headerMessage: String
+    var footerMessage: String
+    var language: String?
+}
+
+struct DateRangeSettings: Codable {
+    var useCustomRange: Bool
+    var startDate: Date
+    var endDate: Date
+    
+    init() {
+        self.useCustomRange = false
+        // Default: mese corrente
+        let calendar = Calendar.current
+        let now = Date()
+        let components = calendar.dateComponents([.year, .month], from: now)
+        
+        // Inizio mese
+        self.startDate = calendar.date(from: components) ?? now
+        
+        // Fine mese
+        var endComponents = DateComponents()
+        endComponents.month = 1
+        endComponents.day = -1
+        self.endDate = calendar.date(byAdding: endComponents, to: self.startDate) ?? now
+    }
 }
 
 class SettingsManager {

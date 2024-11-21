@@ -86,29 +86,61 @@ enum CalendarError: LocalizedError {
 }
 
 class CalendarViewModel: ObservableObject {
-    private let logger = Logger(subsystem: "com.yourcompany.ReportBuddy", category: "CalendarViewModel")
-    
-    // MARK: - Published Properties
-    @Published private(set) var state: CalendarViewState = .initial
-    @Published var calendars: [EKCalendar] = []
-    @Published var settings: CalendarSettings
-    @Published private(set) var currentEvents: [EKEvent] = []
-    
-    // MARK: - Private Properties
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ReportBuddy", category: "CalendarViewModel")
     private let eventStore = EKEventStore()
-    private let calendar = Calendar.current
+    private var currentTask: Task<Void, Never>?
     private var eventCache: EventCache?
     private var keywordCache: KeywordCache?
-    private var currentTask: Task<Void, Never>?
-    private var saveSettingsTask: Task<Void, Never>?
+    private let calendar = Calendar.current
     
-    // MARK: - Initialization
+    @Published var calendars: [EKCalendar] = []
+    @Published var events: [EKEvent] = []
+    @Published var state: CalendarViewState = .initial
+    @Published var settings: CalendarSettings
+    @Published var editingKeyword: String?
+    @Published var editedKeywordText: String = ""
+    
     init() {
+        // Inizializza settings prima di tutto
         self.settings = SettingsManager.shared.loadSettings()
-        logger.info("CalendarViewModel inizializzato")
         
-        Task { @MainActor in
+        // Dopo l'inizializzazione completa, richiedi l'accesso
+        Task {
             await checkAndRequestAccess()
+        }
+    }
+    
+    // Aggiungi un metodo separato per osservare i cambiamenti delle impostazioni
+    func updateSettings(_ newSettings: CalendarSettings) {
+        settings = newSettings
+        refreshEvents()
+    }
+    
+    func saveSettings() {
+        SettingsManager.shared.saveSettings(settings)
+        keywordCache = nil  // Invalida la cache delle keywords
+        eventCache = nil    // Invalida la cache degli eventi
+        refreshEvents()     // Forza l'aggiornamento degli eventi
+    }
+    
+    func addKeyword(_ keyword: String) {
+        settings.eventKeywords.append(keyword)
+        keywordCache = nil  // Invalida la cache delle keywords
+        saveSettings()
+        refreshEvents()     // Forza l'aggiornamento degli eventi
+    }
+    
+    func removeKeyword(_ keyword: String) {
+        settings.eventKeywords.removeAll { $0 == keyword }
+        keywordCache = nil  // Invalida la cache delle keywords
+        saveSettings()
+        refreshEvents()     // Forza l'aggiornamento degli eventi
+    }
+    
+    func refreshEvents() {
+        currentTask?.cancel()
+        currentTask = Task {
+            await loadEvents()
         }
     }
     
@@ -258,47 +290,75 @@ class CalendarViewModel: ObservableObject {
             }
         }
         
-        // Se siamo qui, abbiamo l'autorizzazione
-        let now = Date()
-        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)),
-              let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth) else {
-            logger.error("Errore nella generazione delle date")
-            state = .error(CalendarError.invalidDate.errorDescription ?? "Errore data")
+        // Determina l'intervallo di date da usare
+        let startDate: Date
+        let endDate: Date
+        
+        if settings.dateRange.useCustomRange {
+            // Usa l'intervallo personalizzato
+            startDate = settings.dateRange.startDate
+            endDate = settings.dateRange.endDate
+        } else {
+            // Usa il mese corrente (comportamento predefinito)
+            let now = Date()
+            startDate = calendar.monthStartDate(for: now)
+            endDate = calendar.monthEndDate(for: now)
+        }
+        
+        let selectedCalendars = calendars.filter { self.settings.selectedCalendarIds.contains($0.calendarIdentifier) }
+        
+        guard !selectedCalendars.isEmpty else {
+            logger.debug("Nessun calendario selezionato - Pulisco gli eventi")
+            events = []
             return
         }
         
-        let selectedCalendars = calendars.filter { settings.selectedCalendarIds.contains($0.calendarIdentifier) }
-        
-        // Se non ci sono calendari selezionati o parole chiave, pulisci gli eventi
-        if selectedCalendars.isEmpty || settings.eventKeywords.isEmpty {
-            logger.debug("Nessun calendario selezionato o nessuna parola chiave - Pulisco gli eventi")
-            currentEvents = []
-            return
-        }
-        
-        let predicate = eventStore.predicateForEvents(withStart: startOfMonth, end: endOfMonth, calendars: selectedCalendars)
+        // Usa l'intervallo di date calcolato per il predicate
+        let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: selectedCalendars)
         
         let allEvents = eventStore.events(matching: predicate)
         
-        // Rimuovi duplicati usando un Dictionary con chiave composita
+        // Debug log per vedere gli eventi all-day
+        logger.debug("Eventi totali prima del filtro: \(allEvents.count)")
+        logger.debug("Eventi all-day prima del filtro: \(allEvents.filter { $0.isAllDay }.count)")
+        logger.debug("Eventi non all-day prima del filtro: \(allEvents.filter { !$0.isAllDay }.count)")
+        
+        // Rimuovi duplicati
         let uniqueEvents = Dictionary(grouping: allEvents) { event in
             "\(event.eventIdentifier ?? UUID().uuidString)_\(event.startDate.timeIntervalSince1970)"
-        }.compactMap { $0.value.first }
+        }.values.compactMap { $0.first }
         
+        // Applica i filtri
         let filteredEvents = uniqueEvents
-            .filter { settings.onlyAllDayEvents ? $0.isAllDay : true }
-            .filter(matchesKeywords)
+            .filter { event in
+                // Se onlyAllDayEvents è false, mostra tutti gli eventi
+                // Se onlyAllDayEvents è true, mostra solo gli eventi all-day
+                let passesAllDayFilter = !self.settings.onlyAllDayEvents || event.isAllDay
+                
+                // Applica il filtro keywords solo se passa il filtro all-day
+                return passesAllDayFilter && matchesKeywords(event)
+            }
             .sorted { $0.startDate < $1.startDate }
         
-        logger.debug("Filtrati \(filteredEvents.count) eventi unici da \(allEvents.count) totali")
+        logger.debug("""
+            Statistiche filtro:
+            - Intervallo date: \(self.dateFormatter.string(from: startDate)) - \(self.dateFormatter.string(from: endDate))
+            - Intervallo personalizzato: \(self.settings.dateRange.useCustomRange)
+            - Eventi totali: \(allEvents.count)
+            - Eventi unici: \(uniqueEvents.count)
+            - Eventi finali: \(filteredEvents.count)
+            - All-day only attivo: \(self.settings.onlyAllDayEvents)
+            - Eventi all-day nel risultato: \(filteredEvents.filter { $0.isAllDay }.count)
+            - Eventi non all-day nel risultato: \(filteredEvents.filter { !$0.isAllDay }.count)
+            """)
         
         eventCache = EventCache(
             events: filteredEvents,
-            timestamp: now,
-            month: calendar.component(.month, from: now),
-            year: calendar.component(.year, from: now)
+            timestamp: Date(),
+            month: calendar.component(.month, from: Date()),
+            year: calendar.component(.year, from: Date())
         )
-        currentEvents = filteredEvents
+        events = filteredEvents
         state = .authorized
     }
     
@@ -326,71 +386,39 @@ class CalendarViewModel: ObservableObject {
     }
     
     private func matchesKeywords(_ event: EKEvent) -> Bool {
-        guard let title = event.title?.lowercased() else { return false }
+        guard let title = event.title?.lowercased() else {
+            logger.debug("Evento senza titolo ignorato")
+            return false
+        }
         let keywords = getProcessedKeywords()
         
-        // Se non ci sono keyword, non mostrare nessun evento
         if keywords.isEmpty {
+            logger.debug("Nessuna keyword configurata")
             return false
         }
         
-        // Controlla se almeno una keyword è contenuta nel titolo
-        return keywords.contains { keyword in
-            title.contains(keyword.lowercased())
+        let matches = keywords.contains { keyword in
+            let contains = title.contains(keyword.lowercased())
+            logger.debug("""
+                Controllo keyword per evento '\(title)':
+                - Keyword: '\(keyword)'
+                - Match: \(contains)
+                """)
+            return contains
         }
+        
+        return matches
     }
     
     // MARK: - Public Interface
-    func saveSettings() {
-        SettingsManager.shared.saveSettings(settings)
-        reloadEvents() // Forza il reload immediato
-    }
-    
-    func addKeyword(_ keyword: String) {
-        guard !keyword.isEmpty else { return }
-        settings.eventKeywords.append(keyword)
-        SettingsManager.shared.saveSettings(settings)
-        reloadEvents() // Forza il reload immediato
-    }
-    
-    func removeKeyword(_ keyword: String) {
-        settings.eventKeywords.removeAll { $0 == keyword }
-        // Invalida la cache delle keywords
-        keywordCache = nil
-        SettingsManager.shared.saveSettings(settings)
-        // Forza un aggiornamento immediato
-        Task { @MainActor in
-            await updateEventCache()
-            objectWillChange.send()
-        }
-    }
-    
     func exportEvents() {
         Task { @MainActor in
             if let cache = eventCache, cache.isValid {
                 logger.debug("Usando eventi dalla cache")
-                currentEvents = cache.events
+                events = cache.events
             } else {
                 await updateEventCache()
             }
-        }
-    }
-    
-    func reloadEvents() {
-        currentTask?.cancel()
-        currentTask = Task { @MainActor in
-            state = .loading // Mostra l'indicatore di caricamento
-            
-            // Invalida tutte le cache
-            eventCache = nil
-            keywordCache = nil
-            
-            // Ricarica i calendari e gli eventi
-            await loadCalendars()
-            await updateEventCache()
-            
-            state = .authorized
-            objectWillChange.send()
         }
     }
     
@@ -437,5 +465,26 @@ class CalendarViewModel: ObservableObject {
         let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds
         logger.debug("\(operation) completato in \(Double(nanoTime) / 1_000_000_000, privacy: .public) secondi")
         return result
+    }
+    
+    @MainActor
+    private func loadEvents() async {
+        state = .loading
+        await updateEventCache()
+    }
+    
+    // Aggiungi un DateFormatter per il logging
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter
+    }()
+    
+    func updateKeyword(oldKeyword: String, newKeyword: String) {
+        guard !newKeyword.isEmpty else { return }
+        if let index = settings.eventKeywords.firstIndex(of: oldKeyword) {
+            settings.eventKeywords[index] = newKeyword
+            saveSettings()
+        }
     }
 } 
