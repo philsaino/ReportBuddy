@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ReportBuddy - Guida</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ReportBuddy - Guida Utente</h1>
+
+    <div class="section">
+        <h2>Configurazione Iniziale</h2>
+        <ol>
+            <li>Seleziona i calendari da monitorare dal menu a tendina "Calendari"</li>
+            <li>Aggiungi le parole chiave per filtrare gli eventi</li>
+            <li>Configura almeno un template email dalle Preferenze</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>Filtri Eventi</h2>
+        <ul>
+            <li><strong>Parole Chiave:</strong> Gli eventi vengono filtrati in base alle parole chiave inserite</li>
+            <li><strong>Eventi Giornata Intera:</strong> Puoi scegliere di visualizzare solo gli eventi che durano tutto il giorno</li>
+            <li><strong>Intervallo Date:</strong> Puoi selezionare un intervallo di date personalizzato o utilizzare il mese corrente</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Template Email</h2>
+        <ul>
+            <li>Puoi creare più template per diversi tipi di report</li>
+            <li>Ogni template può avere:
+                <ul>
+                    <li>Un destinatario predefinito</li>
+                    <li>Un oggetto personalizzato (con supporto per variabili)</li>
+                    <li>Un messaggio iniziale e finale</li>
+                    <li>Una lingua specifica</li>
+                </ul>
+            </li>
+            <li>Variabili disponibili nell'oggetto:
+                <ul>
+                    <li><code>$month</code> - Mese corrente</li>
+                    <li><code>$year</code> - Anno corrente</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Scorciatoie da Tastiera</h2>
+        <ul>
+            <li><code>⌘,</code> - Apri Preferenze</li>
+            <li><code>⌘R</code> - Aggiorna Eventi</li>
+            <li><code>⌘E</code> - Esporta via Email</li>
+        </ul>
+    </div>
+</body>
+</html> 

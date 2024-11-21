@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ReportBuddy - Guida</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: "SF Mono", Monaco, monospace;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007AFF;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ReportBuddy - Guida Utente</h1>
+
+    <div class="section">
+        <h2>Configurazione Iniziale</h2>
+        <ol>
+            <li>Seleziona i calendari da monitorare dal menu a tendina "Calendari" nella barra laterale</li>
+            <li>Aggiungi le parole chiave per filtrare gli eventi specifici</li>
+            <li>Configura almeno un template email dalle Preferenze (⌘,)</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>Filtri Eventi</h2>
+        <ul>
+            <li><strong>Parole Chiave:</strong> 
+                <ul>
+                    <li>Gli eventi vengono filtrati in base alle parole chiave inserite</li>
+                    <li>Doppio click su una parola chiave per modificarla</li>
+                    <li>Click sul simbolo ✕ per rimuoverla</li>
+                </ul>
+            </li>
+            <li><strong>Eventi Giornata Intera:</strong> Attiva questa opzione per visualizzare solo gli eventi che durano tutto il giorno</li>
+            <li><strong>Intervallo Date:</strong> 
+                <ul>
+                    <li>Predefinito: mese corrente</li>
+                    <li>Personalizzato: seleziona date di inizio e fine specifiche</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Template Email</h2>
+        <div class="note">
+            Accedi alle impostazioni dei template dal menu ReportBuddy > Preferenze o usando ⌘,
+        </div>
+        <ul>
+            <li>Puoi creare più template per diversi tipi di report</li>
+            <li>Ogni template può avere:
+                <ul>
+                    <li>Un destinatario predefinito</li>
+                    <li>Un oggetto personalizzato con supporto per variabili</li>
+                    <li>Un messaggio iniziale e finale</li>
+                    <li>Una lingua specifica (Italiano o English)</li>
+                </ul>
+            </li>
+            <li>Variabili disponibili nell'oggetto:
+                <ul>
+                    <li><code>$month</code> - Mese corrente</li>
+                    <li><code>$year</code> - Anno corrente</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Scorciatoie da Tastiera</h2>
+        <ul>
+            <li><code>⌘,</code> - Apri Preferenze</li>
+            <li><code>⌘R</code> - Aggiorna Eventi</li>
+            <li><code>⌘E</code> - Esporta via Email</li>
+            <li><code>⌘Q</code> - Esci dall'applicazione</li>
+            <li><code>⌘H</code> - Nascondi ReportBuddy</li>
+            <li><code>⌘⌥H</code> - Nascondi altre applicazioni</li>
+        </ul>
+    </div>
+</body>
+</html> 

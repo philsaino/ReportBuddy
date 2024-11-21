@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ReportBuddy - Help</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: "SF Mono", Monaco, monospace;
+        }
+        ul, ol {
+            padding-left: 20px;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007AFF;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ReportBuddy - User Guide</h1>
+
+    <div class="section">
+        <h2>Initial Setup</h2>
+        <ol>
+            <li>Select calendars to monitor from the "Calendars" dropdown in the sidebar</li>
+            <li>Add keywords to filter specific events</li>
+            <li>Configure at least one email template from Preferences (⌘,)</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>Event Filters</h2>
+        <ul>
+            <li><strong>Keywords:</strong> 
+                <ul>
+                    <li>Events are filtered based on entered keywords</li>
+                    <li>Double-click a keyword to edit it</li>
+                    <li>Click the ✕ symbol to remove it</li>
+                </ul>
+            </li>
+            <li><strong>All-day Events:</strong> Enable this option to show only all-day events</li>
+            <li><strong>Date Range:</strong> 
+                <ul>
+                    <li>Default: current month</li>
+                    <li>Custom: select specific start and end dates</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Email Templates</h2>
+        <div class="note">
+            Access template settings from ReportBuddy > Preferences or using ⌘,
+        </div>
+        <ul>
+            <li>You can create multiple templates for different types of reports</li>
+            <li>Each template can have:
+                <ul>
+                    <li>A default recipient</li>
+                    <li>A customized subject with variable support</li>
+                    <li>A header and footer message</li>
+                    <li>A specific language (Italiano or English)</li>
+                </ul>
+            </li>
+            <li>Available variables in subject:
+                <ul>
+                    <li><code>$month</code> - Current month</li>
+                    <li><code>$year</code> - Current year</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Keyboard Shortcuts</h2>
+        <ul>
+            <li><code>⌘,</code> - Open Preferences</li>
+            <li><code>⌘R</code> - Refresh Events</li>
+            <li><code>⌘E</code> - Export via Email</li>
+            <li><code>⌘Q</code> - Quit Application</li>
+            <li><code>⌘H</code> - Hide ReportBuddy</li>
+            <li><code>⌘⌥H</code> - Hide Other Applications</li>
+        </ul>
+    </div>
+</body>
+</html> 
